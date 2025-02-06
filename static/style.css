@@ -1,10 +1,12 @@
-body,html{
-	height: 100%;
-	margin: 0;
-	background: rgb(44, 47, 59);
-   background: -webkit-linear-gradient(to right, rgb(40, 59, 34), rgb(54, 60, 70), rgb(32, 32, 43));
-	background: linear-gradient(to right, rgb(38, 51, 61), rgb(50, 55, 65), rgb(33, 33, 78));
+body, html {
+    height: 100%;
+    margin: 0;
+    background: rgb(41, 30, 20);
+    background: -webkit-linear-gradient(to right, rgb(102, 77, 43), rgb(69, 50, 37), rgb(33, 26, 24));
+    background: linear-gradient(to right, rgb(102, 77, 43), rgb(69, 50, 37), rgb(33, 26, 24));
+    color: #000000; /* Light parchment color for text */
 }
+
 
 .chat{
 	margin-top: auto;
