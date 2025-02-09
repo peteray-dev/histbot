@@ -13,4 +13,4 @@ langchain-huggingface
 sentence-transformers 
 jupyter 
 ipywidgets
--e .
+-e . 
