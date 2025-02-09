@@ -1,34 +1,34 @@
-# sentence-transformers==2.2.2
-# langchain
-# flask
-# pypdf
-# python-dotenv
-# pinecone[grpc]
-# langchain-pinecone
-# langchain_community
-# langchain_openai
-# langchain_experimental
-# langchain-huggingface
-# langchain-huggingface 
-# # sentence-transformers 
-# jupyter 
-# ipywidgets
-# -e .
+sentence-transformers==2.2.2
+langchain
+flask
+pypdf
+python-dotenv
+pinecone[grpc]>=3.0.0 
+langchain-pinecone
+langchain_community
+langchain_openai
+langchain_experimental
+langchain-huggingface
+langchain-huggingface 
+# sentence-transformers 
+jupyter 
+ipywidgets
+-e .
 
 
 # requirements.txt (updated and pinned)
-sentence-transformers==2.2.2
-langchain>=0.0.348
-flask>=3.0.0
-pypdf>=3.17.0
-python-dotenv>=1.0.0
-pinecone-client[grpc]>=3.0.0  # Correct package
-#pinecone==0.0.0  # Block old package
-langchain-pinecone>=0.0.6  # Updated for pinecone-client
-langchain_community>=0.0.20
-langchain_openai>=0.0.8
-langchain_experimental>=0.0.49
-langchain-huggingface>=0.0.4
-jupyter>=1.0.0
-ipywidgets>=8.0.0
--e .
+# sentence-transformers==2.2.2
+# langchain>=0.0.348
+# flask>=3.0.0
+# pypdf>=3.17.0
+# python-dotenv>=1.0.0
+# pinecone-client[grpc]>=3.0.0  # Correct package
+# #pinecone==0.0.0  # Block old package
+# langchain-pinecone>=0.0.6  # Updated for pinecone-client
+# langchain_community>=0.0.20
+# langchain_openai>=0.0.8
+# langchain_experimental>=0.0.49
+# langchain-huggingface>=0.0.4
+# jupyter>=1.0.0
+# ipywidgets>=8.0.0
+# -e .
