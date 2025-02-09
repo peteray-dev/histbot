@@ -23,7 +23,7 @@ flask>=3.0.0
 pypdf>=3.17.0
 python-dotenv>=1.0.0
 pinecone-client[grpc]>=3.0.0  # Correct package
-pinecone==0.0.0  # Block old package
+#pinecone==0.0.0  # Block old package
 langchain-pinecone>=0.0.6  # Updated for pinecone-client
 langchain_community>=0.0.20
 langchain_openai>=0.0.8
