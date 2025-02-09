@@ -1,44 +1,16 @@
 # sentence-transformers==2.2.2
-# langchain
-# flask
-# pypdf
-# python-dotenv
-# pinecone[grcp]
-# langchain-pinecone
-# langchain_community
-# langchain_openai
-# langchain_experimental
-# langchain-huggingface
-# langchain-huggingface 
-# sentence-transformers 
-# jupyter 
-# ipywidgets
-# -e . 
-
-
-# Core dependencies
 langchain
 flask
 pypdf
 python-dotenv
-sentence-transformers
-jupyter
-ipywidgets
-
-# Pinecone dependencies (forcing correct versions)
-pinecone-client>=5.0.1
-pinecone>=6.0.0
-pinecone[grpc]
-
-# Prevent installation of deprecated package
-pinecone-plugin-inference==0.0.0  # Ensures it's NOT installed
-
-# LangChain integrations
+pinecone[grcp]
 langchain-pinecone
 langchain_community
 langchain_openai
 langchain_experimental
 langchain-huggingface
-
-# Ensure proper installation
--e .
+langchain-huggingface 
+sentence-transformers 
+jupyter 
+ipywidgets
+-e . 
