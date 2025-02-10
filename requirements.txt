@@ -3,7 +3,7 @@ langchain
 flask
 pypdf
 python-dotenv
-pinecone[grpc]
+# pinecone[grpc]
 langchain-pinecone
 langchain_community
 langchain_openai
@@ -13,5 +13,6 @@ langchain-huggingface
 sentence-transformers 
 jupyter 
 ipywidgets
-pinecone-plugin-inference==3.0.0
+# pinecone-plugin-inference==3.0.0
+pinecone-client[grpc]==5.0.1
 -e .
