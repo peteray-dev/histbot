@@ -10,7 +10,7 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
-RUN pip uninstall pinecone-plugin-inference
+RUN pip uninstall -y pinecone-plugin-inference || true
 
 # RUN pip install pinecone_plugin_interface
 
