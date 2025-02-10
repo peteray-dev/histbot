@@ -14,5 +14,5 @@ sentence-transformers
 jupyter 
 ipywidgets
 pinecone-plugin-inference==3.0.0
-pinecone-client[grpc]==5.0.1
+# pinecone-client[grpc]==5.0.1
 -e .
