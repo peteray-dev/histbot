@@ -13,6 +13,4 @@ langchain-huggingface
 sentence-transformers 
 jupyter 
 ipywidgets
-# pinecone-plugin-inference
-# pinecone-client[grpc]==5.0.1
 -e .
