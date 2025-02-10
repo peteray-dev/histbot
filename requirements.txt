@@ -1,4 +1,4 @@
-sentence-transformers==2.2.2
+# sentence-transformers==2.2.2
 langchain
 flask
 pypdf
@@ -10,8 +10,8 @@ langchain_openai
 langchain_experimental
 langchain-huggingface
 langchain-huggingface 
-# sentence-transformers 
+sentence-transformers 
 jupyter 
 ipywidgets
-pinecone-plugin-inference==3.0.0
+pinecone-plugin-inference
 -e .
