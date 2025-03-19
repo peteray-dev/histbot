@@ -7,9 +7,8 @@ def load_pdf_file(data):
     loader = DirectoryLoader(
         data, glob="*.pdf", loader_cls=PyPDFLoader
     )
-
     documents = loader.load()
-
+    # print(documents[0])
     return documents
 
 

@@ -1,38 +1,66 @@
-from src.helper import load_pdf_file, text_split,download_hugging_face_embedding
-# from pinecone.grpc import PineconeGRPC as Pinecone
-from pinecone import Pinecone, ServerlessSpec
-# from pinecone import ServerlessSpec
-from langchain_pinecone import PineconeVectorStore
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from pinecone import Pinecone, ServerlessSpec
+from langchain_pinecone import PineconeVectorStore
+from src.helper import load_pdf_file, text_split, download_hugging_face_embedding
 
+class PineconeHandler:
+    def __init__(self, index_name="new_info", dimension=384, metric="cosine", cloud="aws", region="us-east-1"):
+        load_dotenv()
+        
+        self.index_name = index_name
+        self.dimension = dimension
+        self.metric = metric
+        self.cloud = cloud
+        self.region = region
+        
+        self.pinecone_api_key = os.getenv("PINECONE_API_KEY")
+        os.environ["PINECONE_API_KEY"] = self.pinecone_api_key
+        
+        self.pc = Pinecone(api_key=self.pinecone_api_key)
 
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
-os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+        # Load embeddings
+        self.embeddings = download_hugging_face_embedding()
 
+    def index_exists(self):
+        """Checks if the Pinecone index already exists."""
+        existing_indexes = [index.name for index in self.pc.list_indexes()]
+        return self.index_name in existing_indexes
 
-extracted_data = load_pdf_file(data="Data/")
-text_chunks = text_split(extracted_data=extracted_data)
-embeddings = download_hugging_face_embedding()
+    def create_index(self):
+        """Creates a Pinecone index only if it doesn't already exist."""
+        if self.index_exists():
+            print(f"⚡ Index '{self.index_name}' already exists. Skipping creation.")
+            return
+        
+        self.pc.create_index(
+            name=self.index_name,
+            dimension=self.dimension,
+            metric=self.metric,
+            spec=ServerlessSpec(cloud=self.cloud, region=self.region),
+        )
+        print(f"✅ Created new Pinecone index: {self.index_name}")
 
+    def upsert_documents(self, data_path="Data/"):
+        """Loads PDF data, splits it, and upserts into Pinecone only if the index is new."""
+        # if self.index_exists():
+        #     print(f"⚡ Index '{self.index_name}' already exists. Using existing data.")
+        #     return PineconeVectorStore.from_existing_index(
+        #         index_name=self.index_name,
+        #         embedding=self.embeddings
+        #     )
 
+        # If index doesn't exist, create embeddings and store them
+        print(f"🚀 Index '{self.index_name}' is new. Uploading documents...")
+        extracted_data = load_pdf_file(data=data_path)
+        text_chunks = text_split(extracted_data=extracted_data)
 
-pc = Pinecone(api_key=PINECONE_API_KEY)
-index_name = "histphilbot"
+        doc_search = PineconeVectorStore.from_documents(
+            documents=text_chunks,
+            index_name=self.index_name,
+            embedding=self.embeddings,
+            namespace = f'user_id_{self.index_name}'
+        )
 
-pc.create_index(
-    name=index_name,
-    dimension=384, # Replace with your model dimensions
-    metric="cosine", # Replace with your model metric
-    spec=ServerlessSpec(
-        cloud="aws",
-        region="us-east-1"
-    ) 
-)
-
-
-doc_search = PineconeVectorStore.from_documents(
-    documents = text_chunks,
-    index_name= index_name,
-    embedding= embeddings
-)
+        print(f"✅ Documents uploaded to Pinecone index '{self.index_name}'")
+        return doc_search
