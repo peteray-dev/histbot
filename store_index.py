@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from src.helper import load_pdf_file, text_split, download_hugging_face_embedding
+import config
 
 class PineconeHandler:
     def __init__(self, index_name="new_info", dimension=384, metric="cosine", cloud="aws", region="us-east-1"):
@@ -25,6 +26,7 @@ class PineconeHandler:
     def index_exists(self):
         """Checks if the Pinecone index already exists."""
         existing_indexes = [index.name for index in self.pc.list_indexes()]
+        print(config.get_chatbot_name())
         return self.index_name in existing_indexes
 
     def create_index(self):
@@ -41,7 +43,7 @@ class PineconeHandler:
         )
         print(f"✅ Created new Pinecone index: {self.index_name}")
 
-    def upsert_documents(self, data_path="Data/"):
+    def upsert_documents(self, data_path="Data/upload/"):
         """Loads PDF data, splits it, and upserts into Pinecone only if the index is new."""
         # if self.index_exists():
         #     print(f"⚡ Index '{self.index_name}' already exists. Using existing data.")
@@ -59,7 +61,8 @@ class PineconeHandler:
             documents=text_chunks,
             index_name=self.index_name,
             embedding=self.embeddings,
-            namespace = f'user_id_{self.index_name}'
+            namespace = f'user_id_{config.get_chatbot_name()}'
+
         )
 
         print(f"✅ Documents uploaded to Pinecone index '{self.index_name}'")

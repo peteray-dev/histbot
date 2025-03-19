@@ -13,6 +13,15 @@
 </head>
 <body>
     <div class="sidebar">
+        <h4>Chatbot Settings</h4>
+    
+        <!-- Chatbot Name Input -->
+        <form id="chatbotNameForm">
+            <input type="text" id="chatbotName" name="chatbot_name" placeholder="Enter Chatbot Name" class="form-control mb-2" required>
+            <button type="submit" class="btn btn-info btn-block">Set Chatbot Name</button>
+        </form>
+        <div id="chatbotNameStatus"></div>
+    
         <h4>Upload PDF</h4>
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="pdfFile" name="file" accept="application/pdf" class="form-control mb-2">
@@ -27,8 +36,17 @@
             <button type="submit" class="btn btn-success btn-block">Scrape & Save</button>
         </form>
         <div id="scrapeStatus"></div>
+    
+        <!-- Generate and Start Chatbot Buttons -->
+        <h4 class="mt-4">Generate Chatbot</h4>
+        <button id="generateChatbot" class="btn btn-warning btn-block">Generate Chatbot</button>
+        <div id="chatbotStatus"></div>
+    
+        <h4 class="mt-4">Start Chatbot</h4>
+        <button id="startChatbot" class="btn btn-success btn-block" >Start Chatbot</button>
+        <div id="startChatbotStatus"></div>
     </div>
-
+    
     <div class="content container-fluid h-100">
         <div class="row justify-content-center h-100">        
             <div class="col-md-8 col-xl-6 chat">
@@ -40,7 +58,7 @@
                                 <span class="online_icon"></span>
                             </div>
                             <div class="user_info">
-                                <span>World History and Philosophy Chatbot</span>
+                                <span id="chatbotTitle">World History and Philosophy Chatbot</span>
                                 <p>Ask me anything!</p>
                             </div>
                         </div>
@@ -81,10 +99,12 @@
                 event.preventDefault();
             });
 
+            $(document).ready(function() {
+            // Handle PDF file upload
             $("#uploadForm").on("submit", function(event) {
                 event.preventDefault();
                 var formData = new FormData($(this)[0]);
-                
+
                 $.ajax({
                     url: "/upload", 
                     type: "POST",
@@ -99,6 +119,83 @@
                     }
                 });
             });
+
+            $("#chatbotNameForm").on("submit", function(event) {
+                event.preventDefault();
+                var chatbotName = $("#chatbotName").val();
+
+                $.ajax({
+                    url: "/set_chatbot_name",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ chatbot_name: chatbotName }),
+                    success: function(response) {
+                        $("#chatbotTitle").text(chatbotName);
+                        $("#chatbotNameStatus").html('<p class="text-success">' + response.message + '</p>');
+                    },
+                    error: function() {
+                        $("#chatbotNameStatus").html('<p class="text-danger">Failed to set chatbot name.</p>');
+                    }
+                });
+            });
+
+
+            $("#generateChatbot").on("click", function() {
+                $("#chatbotStatus").html("<p class='text-info'>Generating chatbot... Please wait.</p>");
+
+                $.ajax({
+                    url: "/generate_chatbot",
+                    type: "POST",
+                    contentType: "application/json",
+                    success: function(response) {
+                        $("#chatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
+                    },
+                    error: function() {
+                        $("#chatbotStatus").html("<p class='text-danger'>Failed to generate chatbot.</p>");
+                    }
+                });
+            });
+
+            
+            // Handle chatbot startup
+            $("#startChatbot").on("click", function() {
+                $("#startChatbotStatus").html("<p class='text-info'>Starting chatbot... Please wait.</p>");
+
+                $.ajax({
+                    url: "/start_chatbot",
+                    type: "POST",
+                    contentType: "application/json",
+                    success: function(response) {
+                        $("#startChatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
+                        $("#text").prop("disabled", false);  // Enable chat input field
+                        $("#send").prop("disabled", false);  // Enable send button
+                    },
+                    error: function() {
+                        $("#startChatbotStatus").html("<p class='text-danger'>Failed to start chatbot.</p>");
+                    }
+                });
+            });
+
+            // Handle URL scraping and PDF conversion
+            $("#scrapeForm").on("submit", function(event) {
+                event.preventDefault();
+                var websiteUrl = $("#websiteUrl").val();
+
+                $.ajax({
+                    url: "/scrape",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ url: websiteUrl }),
+                    success: function(response) {
+                        $("#scrapeStatus").html('<p class="text-success">' + response.message + '</p>');
+                    },
+                    error: function() {
+                        $("#scrapeStatus").html('<p class="text-danger">Failed to scrape website.</p>');
+                    }
+                });
+            });
+         });
+
         });
     </script>
 </body>

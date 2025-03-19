@@ -13,4 +13,8 @@ langchain-huggingface
 sentence-transformers 
 jupyter 
 ipywidgets
+beautifulsoup4
+pdfkit
+Werkzeug
+
 -e .
