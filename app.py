@@ -38,8 +38,10 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 embeddings = download_hugging_face_embedding()
 
+docsearch = None
 @app.route('/generate_chatbot', methods=['POST'])
 def generate_chatbot():
+    global docsearch
     """Generate a chatbot based on uploaded documents and store in a new namespace"""
     chatbot_name = config.get_chatbot_name().replace(" ", "_").lower()
     namespace = f"user_id_{chatbot_name}"  # Generate a namespace
@@ -49,8 +51,8 @@ def generate_chatbot():
     
     pinecone_handler = PineconeHandler(index_name=index_name)
 
-    if pinecone_handler.index_exists():
-        print(f"⚡ Namespace '{namespace}' already exists. Using existing data.")
+    if pinecone_handler.index_exists() and pinecone_handler.namespace_exists(namespace=namespace):
+        print(f"⚡ Namespace '{index_name} and {namespace}' already exists. Using existing data.")
         docsearch = PineconeVectorStore.from_existing_index(
             index_name=index_name,
             embedding=embeddings,
@@ -73,18 +75,22 @@ rag_chain = None
 @app.route('/start_chatbot', methods=['POST'])
 def start_chatbot():
     """Start the chatbot with the latest namespace"""
-    global retriever, memory, rag_chain
+    global retriever, memory, rag_chain, docsearch
 
     chatbot_name = config.get_chatbot_name().replace(" ", "_").lower()
     namespace = f"user_id_{chatbot_name}"
     
     print(f"⚡ Starting chatbot for namespace: {namespace}")
 
-    docsearch = PineconeVectorStore.from_existing_index(
-        index_name="histphilbot",
-        embedding=embeddings,
-        namespace=namespace
-    )
+    # docsearch = PineconeVectorStore.from_existing_index(
+    #     index_name="histphilbot",
+    #     embedding=embeddings,
+    #     namespace=namespace
+    # )
+    if docsearch is None:
+        print("❌ Error: Chatbot not generated yet. Please generate chatbot first.")
+        return jsonify({"error": "Chatbot not generated. Click 'Generate Chatbot' first!"}), 400
+
 
     retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
@@ -178,6 +184,8 @@ def upload_file():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(UPLOAD_FOLDER, filename)
+        # Ensure the directory exists before saving
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         file.save(filepath)
         return jsonify({"message": f"File uploaded successfully: {filename}"}), 200
     else:

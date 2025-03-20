@@ -29,6 +29,24 @@ class PineconeHandler:
         print(config.get_chatbot_name())
         return self.index_name in existing_indexes
 
+    def namespace_exists(self, namespace):
+        """Checks if a given namespace exists in Pinecone."""
+        try:
+            index = self.pc.Index(self.index_name)
+            stats = index.describe_index_stats()
+            existing_namespaces = stats.get("namespaces", {})
+
+            if namespace in existing_namespaces:
+                print(f"✅ Namespace '{namespace}' exists.")
+                return True
+            else:
+                print(f"❌ Namespace '{namespace}' does NOT exist.")
+                return False
+        except Exception as e:
+            print(f"⚠️ Error checking namespace: {e}")
+            return False
+        
+        
     def create_index(self):
         """Creates a Pinecone index only if it doesn't already exist."""
         if self.index_exists():
