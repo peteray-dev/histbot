@@ -51,8 +51,8 @@ def generate_chatbot():
     
     pinecone_handler = PineconeHandler(index_name=index_name)
 
-    if pinecone_handler.index_exists():
-        print(f"⚡ Namespace '{namespace}' already exists. Using existing data.")
+    if pinecone_handler.index_exists() and pinecone_handler.namespace_exists(namespace=namespace):
+        print(f"⚡ Namespace '{index_name} and {namespace}' already exists. Using existing data.")
         docsearch = PineconeVectorStore.from_existing_index(
             index_name=index_name,
             embedding=embeddings,
