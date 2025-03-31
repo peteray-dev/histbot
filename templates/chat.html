@@ -47,38 +47,46 @@
         <div id="startChatbotStatus"></div>
     </div>
     
-    <div class="content container-fluid h-100">
-        <div class="row justify-content-center h-100">        
-            <div class="col-md-8 col-xl-6 chat">
-                <div class="card">
-                    <div class="card-header msg_head">
-                        <div class="d-flex bd-highlight">
-                            <div class="img_cont">
-                                <img src="https://cdn-icons-png.flaticon.com/512/888/888091.png" class="rounded-circle user_img">
-                                <span class="online_icon"></span>
-                            </div>
-                            <div class="user_info">
-                                <span id="chatbotTitle">World History and Philosophy Chatbot</span>
-                                <p>Ask me anything!</p>
-                            </div>
-                        </div>
+    <div class="chatbot-widget" id="chatbotWidget">
+        <div class="card">
+            <div class="card-header msg_head">
+                <div class="d-flex bd-highlight">
+                    <div class="img_cont">
+                        <img src="https://cdn-icons-png.flaticon.com/512/888/888091.png" class="rounded-circle user_img">
+                        <span class="online_icon"></span>
                     </div>
-                    <div id="messageFormeight" class="card-body msg_card_body"></div>
-                    <div class="card-footer">
-                        <form id="messageArea" class="input-group">
-                            <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
-                            <div class="input-group-append">
-                                <button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
-                            </div>
-                        </form>
+                    <div class="user_info">
+                        <span id="chatbotTitle">World History and Philosophy Chatbot</span>
+                        <p>Ask me anything!</p>
                     </div>
                 </div>
+            </div>
+            <div id="messageFormeight" class="card-body msg_card_body"></div>
+            <div class="card-footer">
+                <form id="messageArea" class="input-group">
+                    <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
+                    <div class="input-group-append">
+                        <button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
+    <!-- Toggle Button -->
+    <button class="chatbot-toggle" id="chatbotToggleBtn">
+        <i class="fas fa-comment-alt"></i>
+    </button>
+
+    
+
     <script>
         $(document).ready(function() {
+             // Toggle chatbot visibility
+             $("#chatbotToggleBtn").on("click", function () {
+                $("#chatbotWidget").fadeToggle();
+            });
+            
             $("#messageArea").on("submit", function(event) {
                 const date = new Date();
                 const str_time = date.getHours() + ":" + date.getMinutes();
@@ -101,102 +109,103 @@
 
             $(document).ready(function() {
             // Handle PDF file upload
-            $("#uploadForm").on("submit", function(event) {
-                event.preventDefault();
-                var formData = new FormData($(this)[0]);
+                $("#uploadForm").on("submit", function(event) {
+                    event.preventDefault();
+                    var formData = new FormData($(this)[0]);
 
-                $.ajax({
-                    url: "/upload", 
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $("#uploadStatus").html('<p class="text-success">' + response.message + '</p>');
-                    },
-                    error: function() {
-                        $("#uploadStatus").html('<p class="text-danger">File upload failed.</p>');
-                    }
+                    $.ajax({
+                        url: "/upload", 
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            $("#uploadStatus").html('<p class="text-success">' + response.message + '</p>');
+                        },
+                        error: function() {
+                            $("#uploadStatus").html('<p class="text-danger">File upload failed.</p>');
+                        }
+                    });
+                });
+
+                $("#chatbotNameForm").on("submit", function(event) {
+                    event.preventDefault();
+                    var chatbotName = $("#chatbotName").val();
+
+                    $.ajax({
+                        url: "/set_chatbot_name",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ chatbot_name: chatbotName }),
+                        success: function(response) {
+                            $("#chatbotTitle").text(chatbotName);
+                            $("#chatbotNameStatus").html('<p class="text-success">' + response.message + '</p>');
+                        },
+                        error: function() {
+                            $("#chatbotNameStatus").html('<p class="text-danger">Failed to set chatbot name.</p>');
+                        }
+                    });
+                });
+
+
+                $("#generateChatbot").on("click", function() {
+                    $("#chatbotStatus").html("<p class='text-info'>Generating chatbot... Please wait.</p>");
+
+                    $.ajax({
+                        url: "/generate_chatbot",
+                        type: "POST",
+                        contentType: "application/json",
+                        success: function(response) {
+                            $("#chatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
+                        },
+                        error: function() {
+                            $("#chatbotStatus").html("<p class='text-danger'>Failed to generate chatbot.</p>");
+                        }
+                    });
+                });
+
+                
+                // Handle chatbot startup
+                $("#startChatbot").on("click", function() {
+                    $("#startChatbotStatus").html("<p class='text-info'>Starting chatbot... Please wait.</p>");
+
+                    $.ajax({
+                        url: "/start_chatbot",
+                        type: "POST",
+                        contentType: "application/json",
+                        success: function(response) {
+                            $("#startChatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
+                            $("#text").prop("disabled", false);  // Enable chat input field
+                            $("#send").prop("disabled", false);  // Enable send button
+                        },
+                        error: function() {
+                            $("#startChatbotStatus").html("<p class='text-danger'>Failed to start chatbot.</p>");
+                        }
+                    });
+                });
+
+                // Handle URL scraping and PDF conversion
+                $("#scrapeForm").on("submit", function(event) {
+                    event.preventDefault();
+                    var websiteUrl = $("#websiteUrl").val();
+
+                    $.ajax({
+                        url: "/scrape",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ url: websiteUrl }),
+                        success: function(response) {
+                            $("#scrapeStatus").html('<p class="text-success">' + response.message + '</p>');
+                        },
+                        error: function() {
+                            $("#scrapeStatus").html('<p class="text-danger">Failed to scrape website.</p>');
+                        }
+                    });
                 });
             });
-
-            $("#chatbotNameForm").on("submit", function(event) {
-                event.preventDefault();
-                var chatbotName = $("#chatbotName").val();
-
-                $.ajax({
-                    url: "/set_chatbot_name",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ chatbot_name: chatbotName }),
-                    success: function(response) {
-                        $("#chatbotTitle").text(chatbotName);
-                        $("#chatbotNameStatus").html('<p class="text-success">' + response.message + '</p>');
-                    },
-                    error: function() {
-                        $("#chatbotNameStatus").html('<p class="text-danger">Failed to set chatbot name.</p>');
-                    }
-                });
-            });
-
-
-            $("#generateChatbot").on("click", function() {
-                $("#chatbotStatus").html("<p class='text-info'>Generating chatbot... Please wait.</p>");
-
-                $.ajax({
-                    url: "/generate_chatbot",
-                    type: "POST",
-                    contentType: "application/json",
-                    success: function(response) {
-                        $("#chatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
-                    },
-                    error: function() {
-                        $("#chatbotStatus").html("<p class='text-danger'>Failed to generate chatbot.</p>");
-                    }
-                });
-            });
-
-            
-            // Handle chatbot startup
-            $("#startChatbot").on("click", function() {
-                $("#startChatbotStatus").html("<p class='text-info'>Starting chatbot... Please wait.</p>");
-
-                $.ajax({
-                    url: "/start_chatbot",
-                    type: "POST",
-                    contentType: "application/json",
-                    success: function(response) {
-                        $("#startChatbotStatus").html("<p class='text-success'>" + response.message + "</p>");
-                        $("#text").prop("disabled", false);  // Enable chat input field
-                        $("#send").prop("disabled", false);  // Enable send button
-                    },
-                    error: function() {
-                        $("#startChatbotStatus").html("<p class='text-danger'>Failed to start chatbot.</p>");
-                    }
-                });
-            });
-
-            // Handle URL scraping and PDF conversion
-            $("#scrapeForm").on("submit", function(event) {
-                event.preventDefault();
-                var websiteUrl = $("#websiteUrl").val();
-
-                $.ajax({
-                    url: "/scrape",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ url: websiteUrl }),
-                    success: function(response) {
-                        $("#scrapeStatus").html('<p class="text-success">' + response.message + '</p>');
-                    },
-                    error: function() {
-                        $("#scrapeStatus").html('<p class="text-danger">Failed to scrape website.</p>');
-                    }
-                });
-            });
-         });
 
         });
+        
     </script>
 </body>
 </html>

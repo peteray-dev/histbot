@@ -46,7 +46,7 @@ class PineconeHandler:
             print(f"⚠️ Error checking namespace: {e}")
             return False
         
-        
+
     def create_index(self):
         """Creates a Pinecone index only if it doesn't already exist."""
         if self.index_exists():
@@ -60,7 +60,7 @@ class PineconeHandler:
             spec=ServerlessSpec(cloud=self.cloud, region=self.region),
         )
         print(f"✅ Created new Pinecone index: {self.index_name}")
-
+    
     def upsert_documents(self, data_path="Data/upload/"):
         """Loads PDF data, splits it, and upserts into Pinecone only if the index is new."""
         # if self.index_exists():

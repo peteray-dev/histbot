@@ -262,3 +262,37 @@ border-radius: 0 0 15px 15px !important;
 	margin-bottom: 15px !important;
 }
 }
+
+  .chatbot-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .chatbot-widget {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        z-index: 9998;
+        width: 350px;
+        max-height: 500px;
+        display: none;
+    }
+
+    .chat {
+        height: 100%;
+    }
+
+    .msg_card_body {
+        overflow-y: auto;
+        max-height: 300px;
+    }
